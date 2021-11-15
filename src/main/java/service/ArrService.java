@@ -3,10 +3,7 @@ package service;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
@@ -19,31 +16,36 @@ public class ArrService {
 
     public Optional<Map<String, Object>> arrManipulationResults() throws IOException
             , ClassNotFoundException {
-        results = new HashMap<>();
+        String resultsDelimiter = "-------------------------------------------------------------------------------------------------------------------------------------------------";
+        results = new LinkedHashMap<>();
         int[] randomIntArr = getRandomArrInt();
         results.put("-", "array of 200 natural numbers, ranging from 0 to 1000");
-        results.put("random array", randomIntArr);
+        results.put("random array", Arrays.toString(randomIntArr));
+        results.put(resultsDelimiter+"-", resultsDelimiter);
         byte[] bytes = arrSerialization(randomIntArr);
         results.put("serialized array", bytes);
         results.put("line length", bytes.length);
-        results.put("-----", "-----");
+        results.put(resultsDelimiter+"--", resultsDelimiter);
         byte[] compress = compress(bytes);
         results.put("compress line", compress);
         results.put("compress line length", compress.length);
         results.put("compression ratio ", (1.0f * bytes.length/compress.length));
         results.put("string compression mechanism ", "Deflater.BEST_COMPRESSION");
-        results.put("-----", "-----");
+        results.put(resultsDelimiter+"---", resultsDelimiter);
         byte[] uncompress = uncompress(compress);
-        results.put("uncompress line", compress);
+        results.put("uncompress line", uncompress);
         results.put("uncompress line length", uncompress.length);
-        results.put("-----", "-----");
+        results.put(resultsDelimiter+"----", resultsDelimiter);
         int[] ints = arrDeserialization(uncompress);
-        results.put("recovered array", ints);
+        results.put("recovered array", Arrays.toString(ints));
         return Optional.of(results);
     }
 
     private int[] getRandomArrInt() {
         int[] arr = new int[200];
+        for(int i = 0; i < arr.length; i++){
+            arr[i] = ThreadLocalRandom.current().nextInt( 1000);
+        }
         return arr;
     }
 
